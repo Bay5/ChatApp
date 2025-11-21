@@ -1,4 +1,4 @@
-package com.example.chatapp
+package com.bay.chatapp
 
 import org.junit.Test
 
