@@ -9,6 +9,7 @@ sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
     object Success : AuthState()
+    data class NeedsUsername(val email: String?) : AuthState()
     data class Error(val message: String?) : AuthState()
 }
 
@@ -29,6 +30,24 @@ class AuthViewModel(
     fun loginWithEmail(email: String, password: String) {
         _authState.value = AuthState.Loading
         repository.loginWithEmail(email, password) { ok, error ->
+            _authState.value = if (ok) AuthState.Success else AuthState.Error(error)
+        }
+    }
+
+    fun loginWithGoogle(idToken: String) {
+        _authState.value = AuthState.Loading
+        repository.loginWithGoogle(idToken) { success, needUsername, email, error ->
+            _authState.value = when {
+                !success -> AuthState.Error(error)
+                needUsername -> AuthState.NeedsUsername(email)
+                else -> AuthState.Success
+            }
+        }
+    }
+
+    fun setUsername(username: String) {
+        _authState.value = AuthState.Loading
+        repository.setUsernameForCurrentUser(username) { ok, error ->
             _authState.value = if (ok) AuthState.Success else AuthState.Error(error)
         }
     }

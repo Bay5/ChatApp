@@ -1,9 +1,11 @@
-package com.bay.chatapp.view
+package com.bay.chatapp.view.Auth
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bay.chatapp.R
 import com.bay.chatapp.adapter.AuthPagerAdapter
+import com.bay.chatapp.view.MainActivity
 import com.bay.chatapp.viewmodel.AuthState
 import com.bay.chatapp.viewmodel.AuthViewModel
 import com.google.android.material.tabs.TabLayout
@@ -24,6 +27,8 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
     private lateinit var progressBar: ProgressBar
+    private lateinit var tvTitle: TextView
+    private lateinit var usernameContainer: FrameLayout
 
     private lateinit var authViewModel: AuthViewModel
 
@@ -39,9 +44,11 @@ class AuthActivity : AppCompatActivity() {
             insets
         }
 
+        tvTitle = findViewById(R.id.tvTitle)
         viewPager = findViewById(R.id.viewPager)
         tabLayout = findViewById(R.id.tabLayout)
         progressBar = findViewById(R.id.progressAuth)
+        usernameContainer = findViewById(R.id.usernameContainer)
 
         val adapter = AuthPagerAdapter(this)
         viewPager.adapter = adapter
@@ -51,7 +58,6 @@ class AuthActivity : AppCompatActivity() {
             tab.text = tabTitles[position]
         }.attach()
 
-        // 🔹 ViewModel
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
 
         authViewModel.authState.observe(this) { state ->
@@ -59,16 +65,28 @@ class AuthActivity : AppCompatActivity() {
                 is AuthState.Idle -> {
                     progressBar.visibility = View.GONE
                 }
+
                 is AuthState.Loading -> {
                     progressBar.visibility = View.VISIBLE
                 }
+
                 is AuthState.Success -> {
                     progressBar.visibility = View.GONE
                     openMain()
                 }
+
+                is AuthState.NeedsUsername -> {
+                    progressBar.visibility = View.GONE
+                    openChooseUsernameFragment()
+                }
+
                 is AuthState.Error -> {
                     progressBar.visibility = View.GONE
-                    Toast.makeText(this, state.message ?: "Unknown error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        state.message ?: "Unknown error",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -76,7 +94,6 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // 🔹 Auto-skip auth if already logged in
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             openMain()
@@ -86,5 +103,19 @@ class AuthActivity : AppCompatActivity() {
     private fun openMain() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
+    }
+
+    private fun openChooseUsernameFragment() {
+        // hide login/register UI
+        tvTitle.visibility = View.GONE
+        tabLayout.visibility = View.GONE
+        viewPager.visibility = View.GONE
+
+        // show container and put fragment inside
+        usernameContainer.visibility = View.VISIBLE
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.usernameContainer, ChooseUsernameFragment())
+            .commit()
     }
 }

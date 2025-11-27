@@ -3,8 +3,8 @@ package com.bay.chatapp.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.bay.chatapp.view.LoginFragment
-import com.bay.chatapp.view.RegisterFragment
+import com.bay.chatapp.view.Auth.LoginFragment
+import com.bay.chatapp.view.Auth.RegisterFragment
 
 class AuthPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
