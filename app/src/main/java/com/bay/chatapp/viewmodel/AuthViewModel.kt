@@ -9,6 +9,7 @@ sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
     object Success : AuthState()
+    object PasswordResetSent : AuthState()
     data class NeedsUsername(val email: String?) : AuthState()
     data class Error(val message: String?) : AuthState()
 }
@@ -31,6 +32,17 @@ class AuthViewModel(
         _authState.value = AuthState.Loading
         repository.loginWithEmail(email, password) { ok, error ->
             _authState.value = if (ok) AuthState.Success else AuthState.Error(error)
+        }
+    }
+
+    fun resetPassword(email: String) {
+        _authState.value = AuthState.Loading
+        repository.resetPassword(email) { ok, error ->
+            _authState.value = if (ok) {
+                AuthState.PasswordResetSent
+            } else {
+                AuthState.Error(error)
+            }
         }
     }
 

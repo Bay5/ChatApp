@@ -64,6 +64,16 @@ class AuthRepository {
             .addOnFailureListener { e -> onResult(false, e.message) }
     }
 
+    fun resetPassword(email: String, onResult: (Boolean, String?) -> Unit) {
+        auth.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                onResult(true, null)
+            }
+            .addOnFailureListener { e ->
+                onResult(false, e.message)
+            }
+    }
+
     fun loginWithGoogle(
         idToken: String,
         onResult: (success: Boolean, needUsername: Boolean, email: String?, error: String?) -> Unit

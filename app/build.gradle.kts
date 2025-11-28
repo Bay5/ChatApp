@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.recyclerview)
     implementation(libs.material)
+    implementation(libs.glide)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

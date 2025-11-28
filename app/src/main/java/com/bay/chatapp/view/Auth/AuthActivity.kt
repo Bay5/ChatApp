@@ -80,6 +80,15 @@ class AuthActivity : AppCompatActivity() {
                     openChooseUsernameFragment()
                 }
 
+                is AuthState.PasswordResetSent -> {
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(
+                        this,
+                        "Reset password link sent. Check your email.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
                 is AuthState.Error -> {
                     progressBar.visibility = View.GONE
                     Toast.makeText(

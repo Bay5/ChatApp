@@ -26,6 +26,7 @@ class LoginFragment : Fragment() {
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
     private lateinit var btnLoginGoogle: Button
+    private lateinit var btnResetPassword: Button
 
     private lateinit var authViewModel: AuthViewModel
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -63,6 +64,7 @@ class LoginFragment : Fragment() {
         etPassword = view.findViewById(R.id.etPassword)
         btnLogin = view.findViewById(R.id.btnLogin)
         btnLoginGoogle = view.findViewById(R.id.btnLoginGoogle)
+        btnResetPassword = view.findViewById(R.id.btnResetPassword)
 
         authViewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
 
@@ -71,6 +73,18 @@ class LoginFragment : Fragment() {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
             authViewModel.loginWithEmail(email, password)
+        }
+
+        btnResetPassword.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+
+            if (email.isEmpty()) {
+                Toast.makeText(requireContext(), "Enter your email first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            authViewModel.resetPassword(email)
+            Toast.makeText(requireContext(), "Password reset email sent", Toast.LENGTH_SHORT).show()
         }
 
         // Configure Google Sign-In
