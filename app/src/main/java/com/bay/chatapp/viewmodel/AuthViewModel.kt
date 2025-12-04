@@ -59,7 +59,14 @@ class AuthViewModel(
 
     fun setUsername(username: String) {
         _authState.value = AuthState.Loading
-        repository.setUsernameForCurrentUser(username) { ok, error ->
+        repository.setUsernameForUser(username) { ok, error ->
+            _authState.value = if (ok) AuthState.Success else AuthState.Error(error)
+        }
+    }
+
+    fun setDisplayName(displayName: String) {
+        _authState.value = AuthState.Loading
+        repository.setDisplayNameForUser(displayName) { ok, error ->
             _authState.value = if (ok) AuthState.Success else AuthState.Error(error)
         }
     }

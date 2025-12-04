@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,8 +18,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
 import com.bay.chatapp.adapter.UserAdapter
 import com.bay.chatapp.model.AppUser
+import com.bay.chatapp.model.Contact
+import com.bay.chatapp.viewmodel.ContactViewModel
 import com.bay.chatapp.viewmodel.UserSearchViewModel
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 
 class SearchUserActivity : AppCompatActivity() {
 
@@ -26,8 +30,11 @@ class SearchUserActivity : AppCompatActivity() {
     private lateinit var rvUsers: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-    private lateinit var viewModel: UserSearchViewModel
+    private lateinit var userSearchViewModel: UserSearchViewModel
+    private lateinit var contactViewModel: ContactViewModel
     private lateinit var adapter: UserAdapter
+
+    private var selectedUser: AppUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,22 +53,36 @@ class SearchUserActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressSearch)
 
         adapter = UserAdapter(emptyList()) { user ->
-            openChat(user)
+            onUserClicked(user)
         }
         rvUsers.layoutManager = LinearLayoutManager(this)
         rvUsers.adapter = adapter
 
-        viewModel = ViewModelProvider(this)[UserSearchViewModel::class.java]
+        userSearchViewModel = ViewModelProvider(this)[UserSearchViewModel::class.java]
+        contactViewModel = ViewModelProvider(this)[ContactViewModel::class.java]
 
-        viewModel.users.observe(this) { list ->
+        // observe search results
+        userSearchViewModel.users.observe(this) { list ->
             adapter.submitList(list)
         }
 
-        viewModel.loading.observe(this) { loading ->
+        userSearchViewModel.loading.observe(this) { loading ->
             progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
-        viewModel.error.observe(this) { error ->
+        userSearchViewModel.error.observe(this) { error ->
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // observe contact status for selected user
+        contactViewModel.contactWithUser.observe(this) { contact ->
+            val user = selectedUser ?: return@observe
+            handleContactStatus(user, contact)
+        }
+
+        contactViewModel.error.observe(this) { error ->
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
             }
@@ -69,17 +90,69 @@ class SearchUserActivity : AppCompatActivity() {
 
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.search(s?.toString().orEmpty())
+                userSearchViewModel.search(s?.toString().orEmpty())
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
     }
 
+    private fun onUserClicked(user: AppUser) {
+        selectedUser = user
+        contactViewModel.checkContact(user.uid)
+    }
+
+    private fun handleContactStatus(user: AppUser, contact: Contact?) {
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+            ?: return Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show()
+
+        when {
+            // No relationship or previously rejected → allow sending a new request
+            contact == null || contact.contactStatus == "" || contact.contactStatus == "REJECTED" -> {
+                AlertDialog.Builder(this)
+                    .setTitle(user.displayName.ifBlank { user.username })
+                    .setMessage("Send contact request to @${user.username}?")
+                    .setPositiveButton("Send") { _, _ ->
+                        contactViewModel.sendRequest(user.uid)
+                        Toast.makeText(this, "Request sent", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+
+            // Already accepted → open chat
+            contact.contactStatus == "ACCEPTED" -> {
+                openChat(user)
+            }
+
+            contact.contactStatus == "REQUESTED" -> {
+                val youAreSender = contact.requestedBy == currentUid
+
+                if (youAreSender) {
+                    // YOU sent the request → show simple message only
+                    Toast.makeText(this, "Request already sent", Toast.LENGTH_SHORT).show()
+                    return
+                } else {
+                    // Incoming request → Accept / Reject
+                    AlertDialog.Builder(this)
+                        .setTitle(user.displayName.ifBlank { user.username })
+                        .setMessage("@${user.username} wants to add you as a contact.")
+                        .setPositiveButton("Accept") { _, _ ->
+                            contactViewModel.accept(contact.id)
+                            Toast.makeText(this, "Contact accepted", Toast.LENGTH_SHORT).show()
+                            openChat(user)
+                        }
+                        .setNegativeButton("Reject") { _, _ ->
+                            contactViewModel.reject(contact.id)
+                            Toast.makeText(this, "Request rejected", Toast.LENGTH_SHORT).show()
+                        }
+                        .show()
+                }
+            }
+        }
+    }
+
     private fun openChat(user: AppUser) {
-        // Start ChatActivity, pass uid + username
         val intent = Intent(this, ChatActivity::class.java).apply {
             putExtra("otherUid", user.uid)
             putExtra("otherUsername", user.username)

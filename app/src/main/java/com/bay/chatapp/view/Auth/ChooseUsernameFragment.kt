@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputEditText
 
 class ChooseUsernameFragment : Fragment() {
 
+    private lateinit var etDisplayName: TextInputEditText
     private lateinit var etUsername: TextInputEditText
     private lateinit var btnSave: Button
     private lateinit var authViewModel: AuthViewModel
@@ -25,6 +26,7 @@ class ChooseUsernameFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_choose_username, container, false)
 
+        etDisplayName = view.findViewById(R.id.etDisplayName)
         etUsername = view.findViewById(R.id.etUsername)
         btnSave = view.findViewById(R.id.btnSaveUsername)
 
@@ -32,15 +34,19 @@ class ChooseUsernameFragment : Fragment() {
 
         btnSave.setOnClickListener {
             val username = etUsername.text.toString().trim().orEmpty()
+            val displayName = etDisplayName.text.toString().trim().orEmpty()
 
             if (username.isEmpty()) {
                 Toast.makeText(requireContext(), "Username required", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
+            else if (displayName.isEmpty()) {
+                Toast.makeText(requireContext(), "Display Name required", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             authViewModel.setUsername(username)
+            authViewModel.setDisplayName(displayName)
         }
-
         return view
     }
 }

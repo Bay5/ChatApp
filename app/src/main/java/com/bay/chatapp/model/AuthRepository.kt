@@ -1,5 +1,6 @@
 package com.bay.chatapp.model
 
+import android.view.Display
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -134,8 +135,7 @@ class AuthRepository {
             }
     }
 
-
-    fun setUsernameForCurrentUser(username: String, onResult: (Boolean, String?) -> Unit) {
+    fun setUsernameForUser(username: String, onResult: (Boolean, String?) -> Unit) {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             onResult(false, "No logged in user")
@@ -158,6 +158,29 @@ class AuthRepository {
                 db.collection("users")
                     .document(currentUser.uid)
                     .update("username", username)
+                    .addOnSuccessListener { onResult(true, null) }
+                    .addOnFailureListener { e -> onResult(false, e.message) }
+            }
+            .addOnFailureListener { e ->
+                onResult(false, e.message)
+            }
+    }
+
+    fun setDisplayNameForUser(displayName: String, onResult: (Boolean, String?) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            onResult(false, "No logged in user")
+            return
+        }
+
+        db.collection("users")
+            .whereEqualTo("displayName", displayName)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { snap ->
+                db.collection("users")
+                    .document(currentUser.uid)
+                    .update("displayName", displayName)
                     .addOnSuccessListener { onResult(true, null) }
                     .addOnFailureListener { e -> onResult(false, e.message) }
             }
