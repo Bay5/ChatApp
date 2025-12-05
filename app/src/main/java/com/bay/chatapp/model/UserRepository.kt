@@ -23,13 +23,37 @@ class UserRepository {
         db.collection("users")
             .orderBy("username")
             .startAt(trimmed)
-            .endAt(trimmed + "\uf8ff")   // prefix search
+            .endAt(trimmed + "\uf8ff")
             .limit(20)
             .get()
             .addOnSuccessListener { snap ->
                 val users = snap.documents
                     .mapNotNull { it.toObject(AppUser::class.java) }
                     .filter { it.uid != currentUid }
+                onResult(users, null)
+            }
+            .addOnFailureListener { e ->
+                onResult(emptyList(), e.message)
+            }
+    }
+
+    fun getUsersByIds(
+        uids: List<String>,
+        onResult: (List<AppUser>, String?) -> Unit
+    ) {
+        if (uids.isEmpty()) {
+            onResult(emptyList(), null)
+            return
+        }
+
+        val limited = uids.take(10)
+
+        db.collection("users")
+            .whereIn("uid", limited)
+            .get()
+            .addOnSuccessListener { snap ->
+                val users = snap.documents
+                    .mapNotNull { it.toObject(AppUser::class.java) }
                 onResult(users, null)
             }
             .addOnFailureListener { e ->

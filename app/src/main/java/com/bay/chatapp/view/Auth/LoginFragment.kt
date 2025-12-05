@@ -31,7 +31,6 @@ class LoginFragment : Fragment() {
     private lateinit var authViewModel: AuthViewModel
     private lateinit var googleSignInClient: GoogleSignInClient
 
-    // Activity Result launcher for Google Sign-In
     private val googleSignInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -87,15 +86,13 @@ class LoginFragment : Fragment() {
             Toast.makeText(requireContext(), "Password reset email sent", Toast.LENGTH_SHORT).show()
         }
 
-        // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // from google-services.json
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
-        // Google button click
         btnLoginGoogle.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             googleSignInLauncher.launch(signInIntent)

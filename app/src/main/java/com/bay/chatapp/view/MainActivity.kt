@@ -20,6 +20,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SearchUserActivity::class.java))
         }
 
+        val btnContacts: View = findViewById(R.id.btnContacts)
+        btnContacts.setOnClickListener {
+            startActivity(Intent(this, ContactsActivity::class.java))
+        }
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)

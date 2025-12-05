@@ -16,7 +16,6 @@ class AuthRepository {
         password: String,
         onResult: (Boolean, String?) -> Unit
     ) {
-        // 1. Check if username exists
         db.collection("users")
             .whereEqualTo("username", username)
             .limit(1)
@@ -27,7 +26,6 @@ class AuthRepository {
                     return@addOnSuccessListener
                 }
 
-                // 2. Create auth account
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener { result ->
                         val uid = result.user!!.uid
@@ -35,12 +33,11 @@ class AuthRepository {
                         val user = AppUser(
                             uid = uid,
                             username = username,
-                            displayName = username,   // or "" if you want
+                            displayName = username,
                             email = email,
                             photoUrl = result.user?.photoUrl?.toString() ?: ""
                         )
 
-                        // 3. Write user profile
                         db.collection("users").document(uid)
                             .set(user)
                             .addOnSuccessListener { onResult(true, null) }
@@ -98,7 +95,6 @@ class AuthRepository {
                 userDoc.get()
                     .addOnSuccessListener { snap ->
                         if (!snap.exists()) {
-                            // First-time Google login → create document with empty username
                             val appUser = AppUser(
                                 uid = uid,
                                 username = "",
@@ -108,7 +104,6 @@ class AuthRepository {
 
                             userDoc.set(appUser)
                                 .addOnSuccessListener {
-                                    // username is empty → needs username screen
                                     onResult(true, true, email, null)
                                 }
                                 .addOnFailureListener { e ->
@@ -118,10 +113,8 @@ class AuthRepository {
                         } else {
                             val username = snap.getString("username") ?: ""
                             if (username.isBlank()) {
-                                // user exists but no username → choose username screen
                                 onResult(true, true, email, null)
                             } else {
-                                // complete profile → go to main
                                 onResult(true, false, email, null)
                             }
                         }
@@ -142,7 +135,6 @@ class AuthRepository {
             return
         }
 
-        // Check if username already used
         db.collection("users")
             .whereEqualTo("username", username)
             .limit(1)
@@ -154,7 +146,6 @@ class AuthRepository {
                     return@addOnSuccessListener
                 }
 
-                // Update this user's doc
                 db.collection("users")
                     .document(currentUser.uid)
                     .update("username", username)

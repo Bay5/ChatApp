@@ -76,7 +76,6 @@ class SearchUserActivity : AppCompatActivity() {
             }
         }
 
-        // observe contact status for selected user
         contactViewModel.contactWithUser.observe(this) { contact ->
             val user = selectedUser ?: return@observe
             handleContactStatus(user, contact)
@@ -107,7 +106,6 @@ class SearchUserActivity : AppCompatActivity() {
             ?: return Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show()
 
         when {
-            // No relationship or previously rejected → allow sending a new request
             contact == null || contact.contactStatus == "" || contact.contactStatus == "REJECTED" -> {
                 AlertDialog.Builder(this)
                     .setTitle(user.displayName.ifBlank { user.username })
@@ -120,7 +118,6 @@ class SearchUserActivity : AppCompatActivity() {
                     .show()
             }
 
-            // Already accepted → open chat
             contact.contactStatus == "ACCEPTED" -> {
                 openChat(user)
             }
@@ -129,11 +126,9 @@ class SearchUserActivity : AppCompatActivity() {
                 val youAreSender = contact.requestedBy == currentUid
 
                 if (youAreSender) {
-                    // YOU sent the request → show simple message only
                     Toast.makeText(this, "Request already sent", Toast.LENGTH_SHORT).show()
                     return
                 } else {
-                    // Incoming request → Accept / Reject
                     AlertDialog.Builder(this)
                         .setTitle(user.displayName.ifBlank { user.username })
                         .setMessage("@${user.username} wants to add you as a contact.")

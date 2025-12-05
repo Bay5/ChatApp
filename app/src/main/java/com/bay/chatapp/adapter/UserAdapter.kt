@@ -26,7 +26,6 @@ class UserAdapter(
         private val tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
 
         fun bind(user: AppUser) {
-            // displayName (fallback to username if empty)
             val nameToShow = if (user.displayName.isNotBlank()) {
                 user.displayName
             } else if (user.username.isNotBlank()) {
@@ -36,14 +35,12 @@ class UserAdapter(
             }
             tvDisplayName.text = nameToShow
 
-            // show @username
             tvUsername.text = if (user.username.isNotBlank()) {
                 "@${user.username}"
             } else {
                 ""
             }
 
-            // load avatar if exists
             if (user.photoUrl.isNotBlank()) {
                 Glide.with(itemView.context)
                     .load(user.photoUrl)
@@ -51,7 +48,6 @@ class UserAdapter(
                     .into(imgAvatar)
             } else {
                 imgAvatar.setImageResource(R.drawable.baseline_person_24)
-                // ^ create a simple person icon drawable, or use default
             }
 
             itemView.setOnClickListener {

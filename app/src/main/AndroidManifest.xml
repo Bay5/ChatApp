@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp">
         <activity
+            android:name=".view.ContactsActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.SearchUserActivity"
             android:exported="false" />
         <activity

@@ -8,17 +8,15 @@ class ContactRepository {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    // generate stable doc id for pair of users
     private fun contactId(uid1: String, uid2: String): String {
         return listOf(uid1, uid2).sorted().joinToString("_")
     }
 
-    // send / overwrite contact request
     fun sendContactRequest(toUid: String, onResult: (Boolean, String?) -> Unit) {
         val currentUid = auth.currentUser?.uid ?: return onResult(false, "Not logged in")
 
         val sorted = listOf(currentUid, toUid).sorted()
-        val id = sorted.joinToString("_")  // same as contactId(currentUid, toUid)
+        val id = sorted.joinToString("_")
 
         val contact = Contact(
             id = id,
@@ -58,7 +56,6 @@ class ContactRepository {
             .addOnFailureListener { e -> onResult(false, e.message) }
     }
 
-    // check current contactStatus with other user
     fun getContactWith(otherUid: String, onResult: (Contact?, String?) -> Unit) {
         val currentUid = auth.currentUser?.uid ?: return onResult(null, "Not logged in")
         val id = contactId(currentUid, otherUid)
@@ -76,7 +73,6 @@ class ContactRepository {
             .addOnFailureListener { e -> onResult(null, e.message) }
     }
 
-    // get all ACCEPTED contacts for current user → list of other uids
     fun getAcceptedContacts(onResult: (List<String>, String?) -> Unit) {
         val uid = auth.currentUser?.uid ?: return onResult(emptyList(), "Not logged in")
 
