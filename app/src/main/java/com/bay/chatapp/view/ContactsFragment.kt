@@ -4,13 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +21,7 @@ import com.bay.chatapp.model.AppUser
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.google.android.material.textfield.TextInputEditText
 
-class ContactsActivity : AppCompatActivity() {
+class ContactsFragment : Fragment() {
 
     private lateinit var etSearch: TextInputEditText
     private lateinit var rvContacts: RecyclerView
@@ -32,31 +33,34 @@ class ContactsActivity : AppCompatActivity() {
     // full list from ViewModel (for filtering)
     private var fullList: List<AppUser> = emptyList()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_contacts)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // inflate fragment layout
+        val view = inflater.inflate(R.layout.fragment_contacts, container, false)
 
-        val root: View = findViewById(R.id.rootContacts)
+        val root: View = view.findViewById(R.id.rootContacts)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        etSearch = findViewById(R.id.etSearchContacts)
-        rvContacts = findViewById(R.id.rvContacts)
-        progressBar = findViewById(R.id.progressContacts)
+        etSearch = view.findViewById(R.id.etSearchContacts)
+        rvContacts = view.findViewById(R.id.rvContacts)
+        progressBar = view.findViewById(R.id.progressContacts)
 
         adapter = UserAdapter(emptyList()) { user ->
             openChat(user)
         }
-        rvContacts.layoutManager = LinearLayoutManager(this)
+        rvContacts.layoutManager = LinearLayoutManager(requireContext())
         rvContacts.adapter = adapter
 
         contactViewModel = ViewModelProvider(this)[ContactViewModel::class.java]
 
-        contactViewModel.contactUsers.observe(this) { users ->
+        contactViewModel.contactUsers.observe(viewLifecycleOwner) { users ->
             fullList = users.sortedBy { user ->
                 val name = when {
                     user.displayName.isNotBlank() -> user.displayName
@@ -68,13 +72,13 @@ class ContactsActivity : AppCompatActivity() {
             applyFilter(etSearch.text?.toString().orEmpty())
         }
 
-        contactViewModel.loading.observe(this) { loading ->
+        contactViewModel.loading.observe(viewLifecycleOwner) { loading ->
             progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
-        contactViewModel.error.observe(this) { error ->
+        contactViewModel.error.observe(viewLifecycleOwner) { error ->
             if (error != null) {
-                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -86,7 +90,10 @@ class ContactsActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        // load contacts once fragment is created
         contactViewModel.loadContactUsers()
+
+        return view
     }
 
     private fun applyFilter(query: String) {
@@ -104,7 +111,7 @@ class ContactsActivity : AppCompatActivity() {
     }
 
     private fun openChat(user: AppUser) {
-        val intent = Intent(this, ChatActivity::class.java).apply {
+        val intent = Intent(requireContext(), ChatActivity::class.java).apply {
             putExtra("otherUid", user.uid)
             putExtra("otherUsername", user.username)
             putExtra("otherPhotoUrl", user.photoUrl)
