@@ -14,39 +14,36 @@ class ChatViewModel(
     private val _messages = MutableLiveData<List<ChatMessage>>(emptyList())
     val messages: LiveData<List<ChatMessage>> = _messages
 
-    private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
+    private val _sending = MutableLiveData(false)
+    val sending: LiveData<Boolean> = _sending
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    private var otherUid: String? = null
     private var listener: ListenerRegistration? = null
-    private var currentOtherUid: String? = null
 
     fun startChat(otherUid: String) {
-        if (currentOtherUid == otherUid && listener != null) return
+        this.otherUid = otherUid
 
+        // clean old listener if any
         listener?.remove()
-        currentOtherUid = otherUid
-        _loading.value = true
 
-        listener = repo.listenForMessages(otherUid) { list, err ->
-            _loading.value = false
-            if (err != null) {
-                _error.value = err
-            } else {
-                _messages.value = list
-            }
-        }
+        listener = repo.listenForMessages(
+            otherUid = otherUid,
+            onUpdate = { msgs -> _messages.postValue(msgs) },
+            onError = { err -> _error.postValue(err) }
+        )
     }
 
     fun sendMessage(text: String) {
-        val otherUid = currentOtherUid ?: return
-        if (text.isBlank()) return
+        val targetUid = otherUid ?: return
+        _sending.value = true
 
-        repo.sendMessage(otherUid, text.trim()) { ok, err ->
-            if (!ok && err != null) {
-                _error.value = err
+        repo.sendTextMessage(targetUid, text) { ok, err ->
+            _sending.postValue(false)
+            if (!ok) {
+                _error.postValue(err ?: "Failed to send")
             }
         }
     }

@@ -7,17 +7,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
 import com.bay.chatapp.model.ChatMessage
-import com.google.firebase.auth.FirebaseAuth
 
 class MessageAdapter(
-    private var items: List<ChatMessage>
+    private var items: List<ChatMessage>,
+    private val currentUid: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val currentUid = FirebaseAuth.getInstance().currentUser?.uid
-
     companion object {
-        private const val VIEW_TYPE_ME = 1
-        private const val VIEW_TYPE_OTHER = 2
+        private const val VIEW_ME = 1
+        private const val VIEW_OTHER = 2
     }
 
     fun submitList(newItems: List<ChatMessage>) {
@@ -27,12 +25,12 @@ class MessageAdapter(
 
     override fun getItemViewType(position: Int): Int {
         val msg = items[position]
-        return if (msg.senderId == currentUid) VIEW_TYPE_ME else VIEW_TYPE_OTHER
+        return if (msg.fromUid == currentUid) VIEW_ME else VIEW_OTHER
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return if (viewType == VIEW_TYPE_ME) {
+        return if (viewType == VIEW_ME) {
             val v = inflater.inflate(R.layout.item_message_me, parent, false)
             MeViewHolder(v)
         } else {
@@ -41,25 +39,25 @@ class MessageAdapter(
         }
     }
 
+    override fun getItemCount(): Int = items.size
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = items[position]
         if (holder is MeViewHolder) holder.bind(msg)
-        if (holder is OtherViewHolder) holder.bind(msg)
+        else if (holder is OtherViewHolder) holder.bind(msg)
     }
 
-    override fun getItemCount(): Int = items.size
-
     inner class MeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvText: TextView = itemView.findViewById(R.id.tvMessageMe)
+        private val tvMsg: TextView = itemView.findViewById(R.id.tvMessageMe)
         fun bind(msg: ChatMessage) {
-            tvText.text = msg.text
+            tvMsg.text = msg.text
         }
     }
 
     inner class OtherViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvText: TextView = itemView.findViewById(R.id.tvMessageOther)
+        private val tvMsg: TextView = itemView.findViewById(R.id.tvMessageOther)
         fun bind(msg: ChatMessage) {
-            tvText.text = msg.text
+            tvMsg.text = msg.text
         }
     }
 }

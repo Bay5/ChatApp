@@ -3,12 +3,10 @@ package com.bay.chatapp.view
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -17,25 +15,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
 import com.bay.chatapp.adapter.MessageAdapter
 import com.bay.chatapp.viewmodel.ChatViewModel
-import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 
 class ChatActivity : AppCompatActivity() {
-
-    private lateinit var viewModel: ChatViewModel
-    private lateinit var adapter: MessageAdapter
 
     private lateinit var rvMessages: RecyclerView
     private lateinit var etMessage: TextInputEditText
     private lateinit var btnSend: ImageButton
-    private lateinit var progressBar: ProgressBar
-    private lateinit var btnBack: ImageView
-    private lateinit var imgAvatar: ImageView
-    private lateinit var tvTitle: TextView
+    private lateinit var toolbar: Toolbar
 
-    private var otherUid: String? = null
-    private var otherUsername: String? = null
-    private var otherPhotoUrl: String? = null
+    private lateinit var viewModel: ChatViewModel
+    private lateinit var adapter: MessageAdapter
+
+    private var otherUid: String = ""
+    private var otherUsername: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,51 +38,42 @@ class ChatActivity : AppCompatActivity() {
 
         val root: View = findViewById(R.id.rootChat)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            val sb = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(sb.left, sb.top, sb.right, sb.bottom)
             insets
         }
 
-        otherUid = intent.getStringExtra("otherUid")
-        otherUsername = intent.getStringExtra("otherUsername")
-        otherPhotoUrl = intent.getStringExtra("otherPhotoUrl")
+        otherUid = intent.getStringExtra("otherUid") ?: ""
+        otherUsername = intent.getStringExtra("otherUsername") ?: ""
 
-        if (otherUid.isNullOrBlank()) {
-            Toast.makeText(this, "Missing user info", Toast.LENGTH_SHORT).show()
+        if (otherUid.isBlank()) {
+            Toast.makeText(this, "Missing other user", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
+        toolbar = findViewById(R.id.toolbarChat)
+        toolbar.title = if (otherUsername.isNotBlank()) otherUsername else "Chat"
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { finish() }
+
         rvMessages = findViewById(R.id.rvMessages)
         etMessage = findViewById(R.id.etMessage)
         btnSend = findViewById(R.id.btnSend)
-        progressBar = ProgressBar(this).apply { visibility = View.GONE } // optional
-        btnBack = findViewById(R.id.btnBack)
-        imgAvatar = findViewById(R.id.imgAvatarChat)
-        tvTitle = findViewById(R.id.tvChatTitle)
 
-        tvTitle.text = otherUsername ?: "Chat"
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        adapter = MessageAdapter(emptyList(), currentUid)
 
-        otherPhotoUrl?.let { url ->
-            if (url.isNotBlank()) {
-                Glide.with(this)
-                    .load(url)
-                    .centerCrop()
-                    .into(imgAvatar)
-            }
-        }
-
-        adapter = MessageAdapter(emptyList())
-        rvMessages.layoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true
-        }
+        val lm = LinearLayoutManager(this)
+        lm.stackFromEnd = true
+        rvMessages.layoutManager = lm
         rvMessages.adapter = adapter
 
         viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
 
-        viewModel.messages.observe(this) { list ->
-            adapter.submitList(list)
-            rvMessages.scrollToPosition(list.size - 1)
+        viewModel.messages.observe(this) { msgs ->
+            adapter.submitList(msgs)
+            rvMessages.scrollToPosition(msgs.size - 1)
         }
 
         viewModel.error.observe(this) { err ->
@@ -97,21 +82,15 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.loading.observe(this) { loading ->
-            // you can show a small loading indicator if you want
-        }
-
         btnSend.setOnClickListener {
             val text = etMessage.text?.toString().orEmpty()
+            if (text.isBlank()) return@setOnClickListener
+
             viewModel.sendMessage(text)
             etMessage.setText("")
         }
 
-        btnBack.setOnClickListener {
-            finish()
-        }
-
-        // start listening for this conversation
-        viewModel.startChat(otherUid!!)
+        // start listening after everything set
+        viewModel.startChat(otherUid)
     }
 }
