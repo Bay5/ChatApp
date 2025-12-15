@@ -9,6 +9,9 @@ import com.bay.chatapp.R
 import com.bay.chatapp.model.ChatItem
 import com.google.android.material.imageview.ShapeableImageView
 import com.bumptech.glide.Glide
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ChatListAdapter(
     private var items: List<ChatItem>,
@@ -24,6 +27,7 @@ class ChatListAdapter(
         private val imgAvatar: ShapeableImageView = itemView.findViewById(R.id.imgChatAvatar)
         private val tvName: TextView = itemView.findViewById(R.id.tvChatName)
         private val tvLastMessage: TextView = itemView.findViewById(R.id.tvChatLastMessage)
+        private val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
 
         fun bind(item: ChatItem) {
             val name = item.otherDisplayName.ifBlank {
@@ -31,6 +35,7 @@ class ChatListAdapter(
             }
             tvName.text = name
             tvLastMessage.text = item.lastMessage
+            tvTimestamp.text = if (item.lastTimestamp > 0L) formatTime(item.lastTimestamp) else ""
 
             if (item.otherPhotoUrl.isNotBlank()) {
                 Glide.with(itemView.context)
@@ -44,6 +49,11 @@ class ChatListAdapter(
             itemView.setOnClickListener {
                 onClick(item)
             }
+        }
+
+        private fun formatTime(millis: Long): String {
+            val df = SimpleDateFormat("HH.mm", Locale.getDefault())
+            return df.format(Date(millis))
         }
     }
 
