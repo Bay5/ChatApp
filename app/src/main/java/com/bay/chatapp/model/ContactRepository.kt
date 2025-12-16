@@ -56,6 +56,19 @@ class ContactRepository {
             .addOnFailureListener { e -> onResult(false, e.message) }
     }
 
+    fun unfriend(otherUid: String, onResult: (Boolean, String?) -> Unit) {
+        val currentUid = auth.currentUser?.uid ?: return onResult(false, "Not logged in")
+        val id = contactId(currentUid, otherUid)
+        db.collection("contacts")
+            .document(id)
+            .update(
+                "contactStatus", "REJECTED",
+                "updatedAt", System.currentTimeMillis()
+            )
+            .addOnSuccessListener { onResult(true, null) }
+            .addOnFailureListener { e -> onResult(false, e.message) }
+    }
+
     fun getContactWith(otherUid: String, onResult: (Contact?, String?) -> Unit) {
         val currentUid = auth.currentUser?.uid ?: return onResult(null, "Not logged in")
         val id = contactId(currentUid, otherUid)

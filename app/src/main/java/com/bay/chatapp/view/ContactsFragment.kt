@@ -20,6 +20,7 @@ import com.bay.chatapp.adapter.UserAdapter
 import com.bay.chatapp.model.AppUser
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.google.android.material.textfield.TextInputEditText
+import com.bay.chatapp.view.ProfileOptionsBottomSheet
 
 class ContactsFragment : Fragment() {
 
@@ -53,7 +54,7 @@ class ContactsFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressContacts)
 
         adapter = UserAdapter(emptyList()) { user ->
-            openChat(user)
+            showProfileOptions(user)
         }
         rvContacts.layoutManager = LinearLayoutManager(requireContext())
         rvContacts.adapter = adapter
@@ -94,6 +95,11 @@ class ContactsFragment : Fragment() {
         contactViewModel.loadContactUsers()
 
         return view
+    }
+
+    private fun showProfileOptions(user: AppUser) {
+        val sheet = ProfileOptionsBottomSheet.newInstance(user)
+        sheet.show(childFragmentManager, "profile_options")
     }
 
     private fun applyFilter(query: String) {

@@ -78,4 +78,16 @@ class ContactViewModel(
             }
         }
     }
+
+    fun unfriend(otherUid: String) {
+        _loading.value = true
+        repo.unfriend(otherUid) { ok, err ->
+            _loading.value = false
+            if (!ok) {
+                _error.value = err
+            } else {
+                loadContactUsers()
+            }
+        }
+    }
 }
