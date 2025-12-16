@@ -14,11 +14,13 @@ import com.bay.chatapp.R
 import com.bay.chatapp.adapter.ChatListAdapter
 import com.bay.chatapp.model.ChatItem
 import com.bay.chatapp.viewmodel.ChatListViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ChatsFragment : Fragment() {
 
     private lateinit var rvChats: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var fabNewChat: FloatingActionButton
 
     private lateinit var viewModel: ChatListViewModel
     private lateinit var adapter: ChatListAdapter
@@ -36,6 +38,7 @@ class ChatsFragment : Fragment() {
 
         rvChats = view.findViewById(R.id.rvChats)
         progressBar = view.findViewById(R.id.progressBarChats) // optional if you add it, or remove
+        fabNewChat = view.findViewById(R.id.fabNewChat)
 
         adapter = ChatListAdapter(emptyList()) { chatItem ->
             openChat(chatItem)
@@ -55,6 +58,10 @@ class ChatsFragment : Fragment() {
         }
 
         viewModel.loadChats()
+
+        fabNewChat.setOnClickListener {
+            startActivity(Intent(requireContext(), SearchUserActivity::class.java))
+        }
     }
 
     private fun openChat(item: ChatItem) {

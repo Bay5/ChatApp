@@ -1,6 +1,5 @@
 package com.bay.chatapp.view
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -8,12 +7,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bay.chatapp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: BottomNavigationView
-    private lateinit var fabNewChat: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +25,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNav = findViewById(R.id.bottomNav)
-        fabNewChat = findViewById(R.id.fabNewChat)
 
         // Default tab → Chats or Contacts (choose one)
         if (savedInstanceState == null) {
@@ -52,11 +48,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> false
             }
-        }
-
-        fabNewChat.setOnClickListener {
-            // Start new chat by searching user
-            startActivity(Intent(this, SearchUserActivity::class.java))
         }
     }
 

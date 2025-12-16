@@ -111,7 +111,6 @@ class MessageAdapter(
             tvMsg.text = msg.text
             tvTime.text = formatTime(msg.timestamp)
             tvCheck.text = "✓" // single checkmark (sent)
-
             tvMsg.post {
                 val bottomCase = tvMsg.lineCount >= 2
                 val cs = ConstraintSet()
@@ -155,7 +154,6 @@ class MessageAdapter(
         fun bind(msg: ChatMessage) {
             tvMsg.text = msg.text
             tvTime.text = formatTime(msg.timestamp)
-
             tvMsg.post {
                 val bottomCase = tvMsg.lineCount >= 2
                 val cs = ConstraintSet()

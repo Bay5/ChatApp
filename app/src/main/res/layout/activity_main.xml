@@ -11,18 +11,6 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="72dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabNewChat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/baseline_chat_24"
-        app:tint="@android:color/white"
-        app:layout_anchor="@id/bottomNav"
-        app:layout_anchorGravity="top|end"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="112dp" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
