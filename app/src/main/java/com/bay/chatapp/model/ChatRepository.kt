@@ -36,7 +36,8 @@ class ChatRepository {
             fromUid = currentUid,
             toUid = toUid,
             text = text.trim(),
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            messageStatus = "sent"
         )
 
         // we also upsert a minimal chat doc (metadata)
@@ -45,6 +46,7 @@ class ChatRepository {
             "userA" to listOf(currentUid, toUid).sorted()[0],
             "userB" to listOf(currentUid, toUid).sorted()[1],
             "lastMessage" to msg.text,
+            "lastFromUid" to currentUid,
             "lastTimestamp" to msg.timestamp
         )
 
@@ -56,6 +58,28 @@ class ChatRepository {
         }.addOnFailureListener { e ->
             onResult(false, e.message)
         }
+    }
+
+    fun markMessagesRead(otherUid: String, onResult: (Boolean, String?) -> Unit) {
+        val currentUid = auth.currentUser?.uid ?: return onResult(false, "Not logged in")
+        val cid = chatId(currentUid, otherUid)
+        val coll = db.collection("chats").document(cid).collection("messages")
+        coll.whereEqualTo("toUid", currentUid)
+            .whereEqualTo("messageStatus", "sent")
+            .get()
+            .addOnSuccessListener { snap ->
+                if (snap.isEmpty) {
+                    onResult(true, null)
+                    return@addOnSuccessListener
+                }
+                db.runBatch { batch ->
+                    snap.documents.forEach { doc ->
+                        batch.update(doc.reference, "messageStatus", "read")
+                    }
+                }.addOnSuccessListener { onResult(true, null) }
+                 .addOnFailureListener { e -> onResult(false, e.message) }
+            }
+            .addOnFailureListener { e -> onResult(false, e.message) }
     }
 
     /**

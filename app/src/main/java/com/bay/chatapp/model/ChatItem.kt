@@ -6,5 +6,6 @@ data class ChatItem(
     val otherDisplayName: String = "",
     val otherPhotoUrl: String = "",
     val lastMessage: String = "",
-    val lastTimestamp: Long = 0L
+    val lastTimestamp: Long = 0L,
+    val unreadCount: Int = 0
 )

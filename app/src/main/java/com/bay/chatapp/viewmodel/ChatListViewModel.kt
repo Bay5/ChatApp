@@ -102,7 +102,39 @@ class ChatListViewModel : ViewModel() {
                     )
                 }
                 items = list
-                mergeAndPublish()
+                val ids = list.map { it.otherUid }.filter { it.isNotBlank() }
+                if (ids.isEmpty()) {
+                    mergeAndPublish()
+                } else {
+                    var done = 0
+                    val updated = list.toMutableList()
+                    ids.forEachIndexed { idx, other ->
+                        val cid = listOf(currentUid, other).sorted().joinToString("_")
+                        db.collection("chats").document(cid).collection("messages")
+                            .whereEqualTo("toUid", currentUid)
+                            .whereEqualTo("messageStatus", "sent")
+                            .get()
+                            .addOnSuccessListener { ms ->
+                                val count = ms.size()
+                                val i = updated.indexOfFirst { it.otherUid == other }
+                                if (i >= 0) {
+                                    updated[i] = updated[i].copy(unreadCount = count)
+                                }
+                                done++
+                                if (done == ids.size) {
+                                    items = updated
+                                    mergeAndPublish()
+                                }
+                            }
+                            .addOnFailureListener {
+                                done++
+                                if (done == ids.size) {
+                                    items = updated
+                                    mergeAndPublish()
+                                }
+                            }
+                    }
+                }
             }
     }
 

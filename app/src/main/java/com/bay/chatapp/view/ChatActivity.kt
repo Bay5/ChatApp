@@ -85,7 +85,17 @@ class ChatActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbarChat)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbar.setNavigationOnClickListener { finish() }
+        toolbar.setNavigationOnClickListener {
+            val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            androidx.core.app.NotificationManagerCompat.from(this)
+                .cancel(listOf(currentUid, otherUid).sorted().joinToString("_").hashCode())
+            val intent = android.content.Intent(this, MainActivity::class.java).apply {
+                putExtra("openTab", "chats")
+                addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            startActivity(intent)
+            finish()
+        }
 
         // Inflate custom toolbar content with avatar + name
         val custom = layoutInflater.inflate(R.layout.toolbar_chat, toolbar, false)
@@ -110,6 +120,8 @@ class ChatActivity : AppCompatActivity() {
         btnSend = findViewById(R.id.btnSend)
 
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        androidx.core.app.NotificationManagerCompat.from(this)
+            .cancel(listOf(currentUid, otherUid).sorted().joinToString("_").hashCode())
         adapter = MessageAdapter(emptyList(), currentUid)
 
         val lm = LinearLayoutManager(this)
@@ -122,6 +134,7 @@ class ChatActivity : AppCompatActivity() {
         viewModel.messages.observe(this) { msgs ->
             adapter.submitList(msgs)
             rvMessages.scrollToPosition(msgs.size - 1)
+            viewModel.markAllRead()
         }
 
         viewModel.error.observe(this) { err ->

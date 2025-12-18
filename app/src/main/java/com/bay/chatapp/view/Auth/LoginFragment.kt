@@ -67,7 +67,6 @@ class LoginFragment : Fragment() {
 
         authViewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
 
-        // Email login
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()

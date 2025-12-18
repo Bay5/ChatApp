@@ -1,12 +1,15 @@
 package com.bay.chatapp.view
 
 import android.os.Bundle
+import android.content.Intent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bay.chatapp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.bay.chatapp.notification.MessageNotificationManager
+import com.bay.chatapp.notification.NotificationHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        NotificationHelper.createChannel(this)
+        MessageNotificationManager.start(this)
 
         val root = findViewById<android.view.View>(R.id.mainContainer)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
@@ -26,10 +31,15 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav = findViewById(R.id.bottomNav)
 
-        // Default tab → Chats or Contacts (choose one)
         if (savedInstanceState == null) {
-            openContacts() // or openChats()
-            bottomNav.selectedItemId = R.id.nav_contacts
+            val tab = intent?.getStringExtra("openTab")
+            if (tab == "chats") {
+                openChats()
+                bottomNav.selectedItemId = R.id.nav_chats
+            } else {
+                openContacts()
+                bottomNav.selectedItemId = R.id.nav_contacts
+            }
         }
 
         bottomNav.setOnItemSelectedListener { item ->
@@ -48,6 +58,18 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val tab = intent.getStringExtra("openTab")
+        if (tab == "chats") {
+            openChats()
+            bottomNav.selectedItemId = R.id.nav_chats
+        } else if (tab == "contacts") {
+            openContacts()
+            bottomNav.selectedItemId = R.id.nav_contacts
         }
     }
 

@@ -28,6 +28,7 @@ class ChatListAdapter(
         private val tvName: TextView = itemView.findViewById(R.id.tvChatName)
         private val tvLastMessage: TextView = itemView.findViewById(R.id.tvChatLastMessage)
         private val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
+        private val tvUnread: TextView = itemView.findViewById(R.id.tvUnreadBadge)
 
         fun bind(item: ChatItem) {
             val name = item.otherDisplayName.ifBlank {
@@ -36,6 +37,13 @@ class ChatListAdapter(
             tvName.text = name
             tvLastMessage.text = item.lastMessage
             tvTimestamp.text = if (item.lastTimestamp > 0L) formatTime(item.lastTimestamp) else ""
+
+            if (item.unreadCount > 0) {
+                tvUnread.visibility = View.VISIBLE
+                tvUnread.text = if (item.unreadCount > 99) "99+" else item.unreadCount.toString()
+            } else {
+                tvUnread.visibility = View.GONE
+            }
 
             if (item.otherPhotoUrl.isNotBlank()) {
                 Glide.with(itemView.context)
@@ -59,7 +67,7 @@ class ChatListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_chat_row, parent, false)
+            .inflate(R.layout.item_card_chat, parent, false)
         return ChatViewHolder(view)
     }
 

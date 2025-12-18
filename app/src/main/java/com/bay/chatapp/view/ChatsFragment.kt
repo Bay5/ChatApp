@@ -63,6 +63,11 @@ class ChatsFragment : Fragment() {
             startActivity(Intent(requireContext(), SearchUserActivity::class.java))
         }
     }
+    
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadChats()
+    }
 
     private fun openChat(item: ChatItem) {
         val intent = Intent(requireContext(), ChatActivity::class.java).apply {

@@ -34,6 +34,10 @@ class ChatViewModel(
             onUpdate = { msgs -> _messages.postValue(msgs) },
             onError = { err -> _error.postValue(err) }
         )
+
+        repo.markMessagesRead(otherUid) { ok, err ->
+            if (!ok) _error.postValue(err)
+        }
     }
 
     fun sendMessage(text: String) {
@@ -45,6 +49,13 @@ class ChatViewModel(
             if (!ok) {
                 _error.postValue(err ?: "Failed to send")
             }
+        }
+    }
+
+    fun markAllRead() {
+        val targetUid = otherUid ?: return
+        repo.markMessagesRead(targetUid) { ok, err ->
+            if (!ok) _error.postValue(err)
         }
     }
 

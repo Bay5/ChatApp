@@ -1,21 +1,24 @@
 package com.bay.chatapp.view
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import com.bay.chatapp.R
 import com.bay.chatapp.model.AppUser
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.DialogFragment
 
-class ProfileOptionsBottomSheet : BottomSheetDialogFragment() {
+class ProfileOptionsBottomSheet : DialogFragment() {
 
     companion object {
         private const val ARG_UID = "arg_uid"
@@ -40,7 +43,13 @@ class ProfileOptionsBottomSheet : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.bottomsheet_profile_options, container, false)
+        return inflater.inflate(R.layout.profile_options, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,11 +60,13 @@ class ProfileOptionsBottomSheet : BottomSheetDialogFragment() {
         val displayName = arguments?.getString(ARG_DISPLAY).orEmpty()
         val photoUrl = arguments?.getString(ARG_PHOTO).orEmpty()
 
+        val scrim = view.findViewById<View>(R.id.rootDialogScrim)
         val img = view.findViewById<ShapeableImageView>(R.id.imgProfileAvatar)
         val tvName = view.findViewById<TextView>(R.id.tvProfileName)
         val tvUsername = view.findViewById<TextView>(R.id.tvProfileUsername)
         val btnChat = view.findViewById<MaterialButton>(R.id.btnProfileChat)
         val btnUnfriend = view.findViewById<MaterialButton>(R.id.btnProfileUnfriend)
+        val btnClose = view.findViewById<ImageButton>(R.id.btnCloseDialog)
 
         val nameToShow = if (displayName.isNotBlank()) displayName
         else if (username.isNotBlank()) username else ""
@@ -86,5 +97,8 @@ class ProfileOptionsBottomSheet : BottomSheetDialogFragment() {
             vm.unfriend(uid)
             dismiss()
         }
+
+        btnClose.setOnClickListener { dismiss() }
+        scrim.setOnClickListener { dismiss() }
     }
 }
