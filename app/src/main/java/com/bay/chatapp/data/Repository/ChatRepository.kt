@@ -1,14 +1,28 @@
-package com.bay.chatapp.model
+package com.bay.chatapp.data.Repository
 
+import com.bay.chatapp.data.entity.ChatMessage
+import com.bay.chatapp.data.local.ChatAppDatabase
+import com.bay.chatapp.data.local.ChatEntity
+import com.bay.chatapp.data.local.MessageEntity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class ChatRepository {
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
+    private val local = ChatAppDatabase.get()
+    private val messageDao = local.messageDao()
+    private val chatDao = local.chatDao()
+    private val repoScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.IO
+    )
 
     private fun chatId(uid1: String, uid2: String): String {
         return listOf(uid1, uid2).sorted().joinToString("_")
@@ -54,6 +68,29 @@ class ChatRepository {
             batch.set(chatRef, chatMeta)
             batch.set(msgRef, msg)
         }.addOnSuccessListener {
+            repoScope.launch {
+                chatDao.upsert(
+                    ChatEntity(
+                        id = cid,
+                        userA = chatMeta["userA"] as String,
+                        userB = chatMeta["userB"] as String,
+                        lastMessage = chatMeta["lastMessage"] as String,
+                        lastFromUid = chatMeta["lastFromUid"] as String,
+                        lastTimestamp = chatMeta["lastTimestamp"] as Long
+                    )
+                )
+                messageDao.upsert(
+                    MessageEntity(
+                        id = msg.id,
+                        chatId = cid,
+                        fromUid = msg.fromUid,
+                        toUid = msg.toUid,
+                        text = msg.text,
+                        timestamp = msg.timestamp,
+                        messageStatus = msg.messageStatus
+                    )
+                )
+            }
             onResult(true, null)
         }.addOnFailureListener { e ->
             onResult(false, e.message)
@@ -113,6 +150,20 @@ class ChatRepository {
                 }
 
                 val msgs = snapshot.documents.mapNotNull { it.toObject(ChatMessage::class.java) }
+                repoScope.launch {
+                    val entities = msgs.map {
+                        MessageEntity(
+                            id = it.id,
+                            chatId = cid,
+                            fromUid = it.fromUid,
+                            toUid = it.toUid,
+                            text = it.text,
+                            timestamp = it.timestamp,
+                            messageStatus = it.messageStatus
+                        )
+                    }
+                    messageDao.upsertAll(entities)
+                }
                 onUpdate(msgs)
             }
     }

@@ -1,4 +1,4 @@
-package com.bay.chatapp.model
+package com.bay.chatapp.data
 // "Other" are dummy
 data class ChatItem(
     val otherUid: String = "",

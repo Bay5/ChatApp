@@ -1,4 +1,4 @@
-package com.bay.chatapp.adapter
+package com.bay.chatapp.view.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.model.ChatMessage
+import com.bay.chatapp.data.entity.ChatMessage
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import java.text.SimpleDateFormat

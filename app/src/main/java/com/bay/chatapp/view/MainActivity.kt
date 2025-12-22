@@ -10,10 +10,13 @@ import com.bay.chatapp.R
 import com.bay.chatapp.notification.MessageNotificationManager
 import com.bay.chatapp.notification.NotificationHelper
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
+import androidx.viewpager2.widget.ViewPager2
+import com.bay.chatapp.view.adapter.MainPagerAdapter
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: ChipNavigationBar
+    private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         NotificationHelper.createChannel(this)
         MessageNotificationManager.start(this)
 
-        val root = findViewById<android.view.View>(R.id.mainContainer)
+        val root = findViewById<android.view.View>(R.id.viewPagerMain)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
@@ -30,29 +33,35 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNav = findViewById(R.id.bottomNav)
+        viewPager = findViewById(R.id.viewPagerMain)
+        viewPager.adapter = MainPagerAdapter(this)
+        viewPager.offscreenPageLimit = 2
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> bottomNav.setItemSelected(R.id.nav_contacts, true)
+                    1 -> bottomNav.setItemSelected(R.id.nav_chats, true)
+                    2 -> bottomNav.setItemSelected(R.id.nav_settings, true)
+                }
+            }
+        })
 
         if (savedInstanceState == null) {
             val tab = intent?.getStringExtra("openTab")
-            if (tab == "chats") {
-                openChats()
-                bottomNav.setItemSelected(R.id.nav_chats, true)
-            } else {
+            if (tab == "contacts") {
                 openContacts()
-                bottomNav.setItemSelected(R.id.nav_contacts, true)
+            } else if (tab == "settings") {
+                openSettings()
+            } else {
+                openChats()
             }
         }
 
         bottomNav.setOnItemSelectedListener { id ->
             when (id) {
-                R.id.nav_contacts -> {
-                    openContacts()
-                }
-                R.id.nav_chats -> {
-                    openChats()
-                }
-                R.id.nav_settings -> {
-                    openSettings()
-                }
+                R.id.nav_contacts -> openContacts()
+                R.id.nav_chats -> openChats()
+                R.id.nav_settings -> openSettings()
             }
         }
     }
@@ -62,28 +71,25 @@ class MainActivity : AppCompatActivity() {
         val tab = intent.getStringExtra("openTab")
         if (tab == "chats") {
             openChats()
-            bottomNav.setItemSelected(R.id.nav_chats, true)
         } else if (tab == "contacts") {
             openContacts()
-            bottomNav.setItemSelected(R.id.nav_contacts, true)
+        } else if (tab == "settings") {
+            openSettings()
         }
     }
 
     private fun openContacts() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.mainContainer, ContactsFragment())
-            .commit()
+        viewPager.currentItem = 0
+        bottomNav.setItemSelected(R.id.nav_contacts, true)
     }
 
     private fun openChats() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.mainContainer, ChatsFragment())
-            .commit()
+        viewPager.currentItem = 1
+        bottomNav.setItemSelected(R.id.nav_chats, true)
     }
 
     private fun openSettings() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.mainContainer, SettingsFragment())
-            .commit()
+        viewPager.currentItem = 2
+        bottomNav.setItemSelected(R.id.nav_settings, true)
     }
 }

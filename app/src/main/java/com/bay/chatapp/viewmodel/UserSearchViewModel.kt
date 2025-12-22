@@ -3,8 +3,8 @@ package com.bay.chatapp.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.bay.chatapp.model.AppUser
-import com.bay.chatapp.model.UserRepository
+import com.bay.chatapp.data.entity.AppUser
+import com.bay.chatapp.data.Repository.UserRepository
 
 class UserSearchViewModel(
     private val repository: UserRepository = UserRepository()

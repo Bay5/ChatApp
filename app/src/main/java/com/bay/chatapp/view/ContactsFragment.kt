@@ -1,6 +1,5 @@
 package com.bay.chatapp.view
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,11 +15,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.adapter.UserAdapter
-import com.bay.chatapp.model.AppUser
+import com.bay.chatapp.view.adapter.UserAdapter
+import com.bay.chatapp.data.entity.AppUser
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.google.android.material.textfield.TextInputEditText
-import com.bay.chatapp.view.ProfileOptionsBottomSheet
 
 class ContactsFragment : Fragment() {
 
@@ -114,14 +112,5 @@ class ContactsFragment : Fragment() {
             displayName.lowercase().contains(q)
         }
         adapter.submitList(filtered)
-    }
-
-    private fun openChat(user: AppUser) {
-        val intent = Intent(requireContext(), ChatActivity::class.java).apply {
-            putExtra("otherUid", user.uid)
-            putExtra("otherUsername", user.username)
-            putExtra("otherPhotoUrl", user.photoUrl)
-        }
-        startActivity(intent)
     }
 }

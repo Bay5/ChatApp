@@ -2,7 +2,6 @@ package com.bay.chatapp.view
 
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +9,14 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import com.bay.chatapp.R
-import com.bay.chatapp.model.AppUser
+import com.bay.chatapp.data.entity.AppUser
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import androidx.lifecycle.ViewModelProvider
 import androidx.fragment.app.DialogFragment
+import androidx.core.graphics.drawable.toDrawable
 
 class ProfileOptionsBottomSheet : DialogFragment() {
 
@@ -48,7 +48,7 @@ class ProfileOptionsBottomSheet : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 

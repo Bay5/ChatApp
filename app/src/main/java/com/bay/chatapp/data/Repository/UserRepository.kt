@@ -1,12 +1,24 @@
-package com.bay.chatapp.model
+package com.bay.chatapp.data.Repository
 
+import com.bay.chatapp.data.entity.AppUser
+import com.bay.chatapp.data.local.ChatAppDatabase
+import com.bay.chatapp.data.local.UserEntity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class UserRepository {
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    private val local = ChatAppDatabase.get()
+    private val userDao = local.userDao()
+    private val repoScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.IO
+    )
 
     fun searchUsersByUsername(
         query: String,
@@ -30,6 +42,17 @@ class UserRepository {
                 val users = snap.documents
                     .mapNotNull { it.toObject(AppUser::class.java) }
                     .filter { it.uid != currentUid }
+                repoScope.launch {
+                    userDao.upsertAll(users.map {
+                        UserEntity(
+                            uid = it.uid,
+                            username = it.username,
+                            displayName = it.displayName,
+                            email = it.email,
+                            photoUrl = it.photoUrl
+                        )
+                    })
+                }
                 onResult(users, null)
             }
             .addOnFailureListener { e ->
@@ -54,6 +77,17 @@ class UserRepository {
             .addOnSuccessListener { snap ->
                 val users = snap.documents
                     .mapNotNull { it.toObject(AppUser::class.java) }
+                repoScope.launch {
+                    userDao.upsertAll(users.map {
+                        UserEntity(
+                            uid = it.uid,
+                            username = it.username,
+                            displayName = it.displayName,
+                            email = it.email,
+                            photoUrl = it.photoUrl
+                        )
+                    })
+                }
                 onResult(users, null)
             }
             .addOnFailureListener { e ->

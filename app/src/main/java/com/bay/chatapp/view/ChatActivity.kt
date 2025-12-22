@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.adapter.MessageAdapter
+import com.bay.chatapp.view.adapter.MessageAdapter
 import com.bay.chatapp.viewmodel.ChatViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth

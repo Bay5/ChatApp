@@ -16,9 +16,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.adapter.UserAdapter
-import com.bay.chatapp.model.AppUser
-import com.bay.chatapp.model.Contact
+import com.bay.chatapp.view.adapter.UserAdapter
+import com.bay.chatapp.data.entity.AppUser
+import com.bay.chatapp.data.entity.Contact
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.bay.chatapp.viewmodel.UserSearchViewModel
 import com.google.android.material.textfield.TextInputEditText

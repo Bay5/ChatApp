@@ -1,4 +1,4 @@
-package com.bay.chatapp.adapter
+package com.bay.chatapp.view.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.model.ChatItem
+import com.bay.chatapp.data.ChatItem
 import com.google.android.material.imageview.ShapeableImageView
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
@@ -40,7 +40,7 @@ class ChatListAdapter(
 
             if (item.unreadCount > 0) {
                 tvUnread.visibility = View.VISIBLE
-                tvUnread.text = if (item.unreadCount > 99) "99+" else item.unreadCount.toString()
+                tvUnread.text = if (item.unreadCount > 999) "999+" else item.unreadCount.toString()
             } else {
                 tvUnread.visibility = View.GONE
             }

@@ -11,8 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.adapter.ChatListAdapter
-import com.bay.chatapp.model.ChatItem
+import com.bay.chatapp.view.adapter.ChatListAdapter
+import com.bay.chatapp.data.ChatItem
 import com.bay.chatapp.viewmodel.ChatListViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 

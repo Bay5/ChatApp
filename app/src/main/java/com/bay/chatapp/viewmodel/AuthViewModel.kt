@@ -3,7 +3,7 @@ package com.bay.chatapp.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.bay.chatapp.model.AuthRepository
+import com.bay.chatapp.data.Repository.AuthRepository
 
 sealed class AuthState {
     object Idle : AuthState()

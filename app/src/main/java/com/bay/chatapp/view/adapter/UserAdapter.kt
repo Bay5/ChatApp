@@ -1,4 +1,4 @@
-package com.bay.chatapp.adapter
+package com.bay.chatapp.view.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
-import com.bay.chatapp.model.AppUser
+import com.bay.chatapp.data.entity.AppUser
 import com.google.android.material.imageview.ShapeableImageView
 import com.bumptech.glide.Glide
 

@@ -1,6 +1,6 @@
-package com.bay.chatapp.model
+package com.bay.chatapp.data.Repository
 
-import android.view.Display
+import com.bay.chatapp.data.entity.AppUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore

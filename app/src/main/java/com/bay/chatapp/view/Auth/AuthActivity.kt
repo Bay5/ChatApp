@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bay.chatapp.R
-import com.bay.chatapp.adapter.AuthPagerAdapter
+import com.bay.chatapp.view.adapter.AuthPagerAdapter
 import com.bay.chatapp.view.MainActivity
 import com.bay.chatapp.viewmodel.AuthState
 import com.bay.chatapp.viewmodel.AuthViewModel

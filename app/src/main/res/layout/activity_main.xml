@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <FrameLayout
-        android:id="@+id/mainContainer"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerMain"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
         app:cnb_unselectedColor="@color/white_grey"
         app:cnb_iconColor="@android:color/white"
         app:cnb_textColor="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/mainContainer"
+        app:layout_constraintTop_toBottomOf="@id/viewPagerMain"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

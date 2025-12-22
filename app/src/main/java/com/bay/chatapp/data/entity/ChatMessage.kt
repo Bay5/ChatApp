@@ -1,4 +1,4 @@
-package com.bay.chatapp.model
+package com.bay.chatapp.data.entity
 
 data class ChatMessage(
     val id: String = "",

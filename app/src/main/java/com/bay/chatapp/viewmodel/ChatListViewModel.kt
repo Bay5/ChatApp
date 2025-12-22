@@ -3,8 +3,8 @@ package com.bay.chatapp.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.bay.chatapp.model.AppUser
-import com.bay.chatapp.model.ChatItem
+import com.bay.chatapp.data.entity.AppUser
+import com.bay.chatapp.data.ChatItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration

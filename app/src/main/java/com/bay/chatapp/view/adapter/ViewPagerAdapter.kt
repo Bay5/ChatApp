@@ -1,4 +1,4 @@
-package com.bay.chatapp.adapter
+package com.bay.chatapp.view.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
