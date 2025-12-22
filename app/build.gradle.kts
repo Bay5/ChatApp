@@ -66,4 +66,6 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.messaging)
     implementation(libs.play.services.auth)
+
+    implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
 }
