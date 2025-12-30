@@ -135,22 +135,40 @@ class AuthRepository {
             return
         }
 
-        db.collection("users")
-            .whereEqualTo("username", username)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { snap ->
-                val takenByOther = snap.documents.any { it.id != currentUser.uid }
-                if (takenByOther) {
-                    onResult(false, "Username already taken")
+        val userDoc = db.collection("users").document(currentUser.uid)
+        userDoc.get()
+            .addOnSuccessListener { me ->
+                val currentUsername = me.getString("username").orEmpty()
+                val lastChanged = me.getLong("usernameChangedAt") ?: 0L
+                val now = System.currentTimeMillis()
+                val canChange = currentUsername.isBlank() || (lastChanged == 0L) || (now - lastChanged >= 30L * 24L * 60L * 60L * 1000L)
+                if (!canChange) {
+                    onResult(false, "Username can be changed once every 30 days")
                     return@addOnSuccessListener
                 }
 
                 db.collection("users")
-                    .document(currentUser.uid)
-                    .update("username", username)
-                    .addOnSuccessListener { onResult(true, null) }
-                    .addOnFailureListener { e -> onResult(false, e.message) }
+                    .whereEqualTo("username", username)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { snap ->
+                        val takenByOther = snap.documents.any { it.id != currentUser.uid }
+                        if (takenByOther) {
+                            onResult(false, "Username already taken")
+                            return@addOnSuccessListener
+                        }
+                        userDoc.update(
+                            mapOf(
+                                "username" to username,
+                                "usernameChangedAt" to now
+                            )
+                        )
+                            .addOnSuccessListener { onResult(true, null) }
+                            .addOnFailureListener { e -> onResult(false, e.message) }
+                    }
+                    .addOnFailureListener { e ->
+                        onResult(false, e.message)
+                    }
             }
             .addOnFailureListener { e ->
                 onResult(false, e.message)

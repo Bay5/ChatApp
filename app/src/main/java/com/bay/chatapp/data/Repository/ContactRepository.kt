@@ -156,18 +156,24 @@ class ContactRepository {
     fun getAcceptedContacts(onResult: (List<String>, String?) -> Unit) {
         val uid = auth.currentUser?.uid ?: return onResult(emptyList(), "Not logged in")
 
-        db.collection("contacts")
+        val coll = db.collection("contacts")
+        coll.whereEqualTo("userA", uid)
             .whereEqualTo("contactStatus", "ACCEPTED")
             .get()
-            .addOnSuccessListener { snap ->
-                val others = snap.documents
-                    .mapNotNull { it.toObject(Contact::class.java) }
-                    .filter { it.userA == uid || it.userB == uid }
-                    .map { if (it.userA == uid) it.userB else it.userA }
-
-                onResult(others, null)
+            .addOnSuccessListener { snapA ->
+                coll.whereEqualTo("userB", uid)
+                    .whereEqualTo("contactStatus", "ACCEPTED")
+                    .get()
+                    .addOnSuccessListener { snapB ->
+                        val docs = snapA.documents + snapB.documents
+                        val contacts = docs.mapNotNull { it.toObject(Contact::class.java) }
+                        val others = contacts.map {
+                            if (it.userA == uid) it.userB else it.userA
+                        }
+                        onResult(others.distinct(), null)
+                    }
+                    .addOnFailureListener { e -> onResult(emptyList(), e.message) }
             }
             .addOnFailureListener { e -> onResult(emptyList(), e.message) }
-        // Could be enhanced to fallback to local
     }
 }

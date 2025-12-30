@@ -70,6 +70,10 @@ class LoginFragment : Fragment() {
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(requireContext(), "Email and password required", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             authViewModel.loginWithEmail(email, password)
         }
 
