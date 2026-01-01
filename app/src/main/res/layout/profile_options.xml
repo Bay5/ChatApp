@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="24dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp">
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -75,7 +75,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp"
-                style="@style/Widget.MaterialComponents.Button" />
+                style="@style/Widget.MaterialComponents.Button"
+                app:cornerRadius="24dp"
+                android:backgroundTint="@color/primary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnProfileUnfriend"
@@ -86,7 +88,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="8dp"
-                style="@style/Widget.MaterialComponents.Button" />
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:strokeColor="@color/primary"
+                android:textColor="@color/primary"
+                app:cornerRadius="24dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -12,6 +12,13 @@
         android:layout_height="wrap_content"
         android:hint="Search"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxCornerRadiusTopStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:boxStrokeColor="@color/primary"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
         app:boxBackgroundMode="outline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +75,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         app:srcCompat="@drawable/baseline_chat_24"
-        app:tint="@android:color/white"
+        app:tint="@color/white"
+        app:backgroundTint="@color/secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

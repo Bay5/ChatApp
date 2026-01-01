@@ -1,4 +1,4 @@
-package com.bay.chatapp.data.Repository
+package com.bay.chatapp.data.repository
 
 import com.bay.chatapp.data.entity.AppUser
 import com.google.firebase.auth.FirebaseAuth

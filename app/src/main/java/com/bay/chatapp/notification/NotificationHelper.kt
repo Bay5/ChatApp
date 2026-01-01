@@ -14,6 +14,8 @@ import com.bay.chatapp.view.ChatActivity
 object NotificationHelper {
     const val CHANNEL_ID = "messages"
     private const val CHANNEL_NAME = "Messages"
+    const val SERVICE_CHANNEL_ID = "service"
+    private const val SERVICE_CHANNEL_NAME = "Background Service"
 
     fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -25,6 +27,16 @@ object NotificationHelper {
             }
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(chan)
+
+            val serviceChan = NotificationChannel(
+                SERVICE_CHANNEL_ID,
+                SERVICE_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Runs background listeners for messages"
+                setShowBadge(false)
+            }
+            nm.createNotificationChannel(serviceChan)
         }
     }
 
@@ -63,5 +75,15 @@ object NotificationHelper {
     fun cancelForChat(context: Context, currentUid: String, otherUid: String) {
         val id = listOf(currentUid, otherUid).sorted().joinToString("_").hashCode()
         NotificationManagerCompat.from(context).cancel(id)
+    }
+
+    fun buildServiceNotification(context: Context): android.app.Notification {
+        val builder = NotificationCompat.Builder(context, SERVICE_CHANNEL_ID)
+            .setSmallIcon(R.drawable.baseline_chat_24)
+            .setContentTitle("Listening for messages")
+            .setContentText("Deliveries and notifications are active")
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setOngoing(true)
+        return builder.build()
     }
 }

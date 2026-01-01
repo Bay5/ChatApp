@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#1A1A1A</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="purple_500">#9C27B0</color>
-    <color name="white_grey">#CBCBCB</color>
+    
+    <!-- Premium Palette -->
+    <color name="primary">#5B4DFF</color> <!-- Vibrant Indigo-Violet -->
+    <color name="primary_dark">#3F3D56</color> <!-- Darker Navy/Violet -->
+    <color name="secondary">#00D4FF</color> <!-- Cyan Accent -->
+    
+    <!-- Backgrounds -->
+    <color name="background_light">#F4F7FB</color> <!-- Very light cool grey -->
+    <color name="surface_card">#FFFFFF</color>
+    
+    <!-- Text -->
+    <color name="text_primary">#2D3436</color>
+    <color name="text_secondary">#636E72</color>
+    <color name="text_hint">#B2BEC3</color>
+
+    <!-- Legacy overrides or mappings to keep existing refs working if needed -->
+    <color name="purple_500">@color/primary</color> 
+    <color name="white_grey">#DFE6E9</color>
 </resources>

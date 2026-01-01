@@ -13,7 +13,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import androidx.fragment.app.Fragment
 import com.bay.chatapp.R
 import com.bay.chatapp.view.Auth.AuthActivity
-import com.bay.chatapp.data.Repository.AuthRepository
+import com.bay.chatapp.data.repository.AuthRepository
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

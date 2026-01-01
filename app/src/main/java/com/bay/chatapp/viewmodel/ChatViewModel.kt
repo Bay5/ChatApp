@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bay.chatapp.data.entity.ChatMessage
-import com.bay.chatapp.data.Repository.ChatRepository
+import com.bay.chatapp.data.repository.ChatRepository
 import com.google.firebase.firestore.ListenerRegistration
 
 class ChatViewModel(

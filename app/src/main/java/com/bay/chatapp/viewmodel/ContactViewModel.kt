@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bay.chatapp.data.entity.AppUser
 import com.bay.chatapp.data.entity.Contact
-import com.bay.chatapp.data.Repository.ContactRepository
-import com.bay.chatapp.data.Repository.UserRepository
+import com.bay.chatapp.data.repository.ContactRepository
+import com.bay.chatapp.data.repository.UserRepository
 
 class ContactViewModel(
     private val repo: ContactRepository = ContactRepository(),
