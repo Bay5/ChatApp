@@ -18,11 +18,12 @@
         app:boxCornerRadiusBottomStart="24dp"
         app:boxCornerRadiusBottomEnd="24dp"
         app:boxStrokeColor="@color/primary"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:boxBackgroundMode="outline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toStartOf="@id/btnRequests">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSearchContacts"
@@ -33,6 +34,18 @@
             android:paddingVertical="10dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/btnRequests"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/baseline_group_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="?attr/colorControlNormal"
+        app:layout_constraintTop_toTopOf="@id/tilSearchContacts"
+        app:layout_constraintBottom_toBottomOf="@id/tilSearchContacts"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="8dp" />
 
     <ProgressBar
         android:id="@+id/progressContacts"

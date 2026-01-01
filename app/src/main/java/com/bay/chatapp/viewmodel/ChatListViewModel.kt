@@ -112,7 +112,7 @@ class ChatListViewModel : ViewModel() {
                         val cid = listOf(currentUid, other).sorted().joinToString("_")
                         db.collection("chats").document(cid).collection("messages")
                             .whereEqualTo("toUid", currentUid)
-                            .whereEqualTo("messageStatus", "sent")
+                            .whereIn("messageStatus", listOf("sent", "received"))
                             .get()
                             .addOnSuccessListener { ms ->
                                 val count = ms.size()

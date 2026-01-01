@@ -153,6 +153,45 @@ class ContactRepository {
         // No local read path added here yet
     }
 
+    fun getIncomingRequests(onResult: (List<String>, String?) -> Unit) {
+        val uid = auth.currentUser?.uid ?: return onResult(emptyList(), "Not logged in")
+
+        val coll = db.collection("contacts")
+        coll.whereEqualTo("userA", uid)
+            .whereEqualTo("contactStatus", "REQUESTED")
+            .get()
+            .addOnSuccessListener { snapA ->
+                coll.whereEqualTo("userB", uid)
+                    .whereEqualTo("contactStatus", "REQUESTED")
+                    .get()
+                    .addOnSuccessListener { snapB ->
+                        val docs = snapA.documents + snapB.documents
+                        val contacts = docs.mapNotNull { it.toObject(Contact::class.java) }
+                        // Filter where requestedBy is NOT me
+                        val others = contacts
+                            .filter { it.requestedBy != uid }
+                            .map {
+                                if (it.userA == uid) it.userB else it.userA
+                            }
+                        onResult(others.distinct(), null)
+                    }
+                    .addOnFailureListener { e -> onResult(emptyList(), e.message) }
+            }
+            .addOnFailureListener { e -> onResult(emptyList(), e.message) }
+    }
+
+    fun acceptContactRequest(otherUid: String, onResult: (Boolean, String?) -> Unit) {
+        val currentUid = auth.currentUser?.uid ?: return onResult(false, "Not logged in")
+        val id = contactId(currentUid, otherUid)
+        acceptContact(id, onResult)
+    }
+
+    fun rejectContactRequest(otherUid: String, onResult: (Boolean, String?) -> Unit) {
+        val currentUid = auth.currentUser?.uid ?: return onResult(false, "Not logged in")
+        val id = contactId(currentUid, otherUid)
+        rejectContact(id, onResult)
+    }
+
     fun getAcceptedContacts(onResult: (List<String>, String?) -> Unit) {
         val uid = auth.currentUser?.uid ?: return onResult(emptyList(), "Not logged in")
 

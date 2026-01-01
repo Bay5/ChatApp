@@ -1,8 +1,10 @@
 package com.bay.chatapp.view.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bay.chatapp.R
@@ -105,17 +107,21 @@ class MessageAdapter(
     inner class MeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvMsg: TextView = itemView.findViewById(R.id.tvMessageMe)
         private val tvTime: TextView = itemView.findViewById(R.id.tvTimeMe)
-        private val tvCheck: TextView = itemView.findViewById(R.id.tvCheckMe)
+        private val ivCheck: ImageView = itemView.findViewById(R.id.ivCheckMe)
         private val bubble: ConstraintLayout = itemView.findViewById(R.id.bubbleMe)
         fun bind(msg: ChatMessage) {
             tvMsg.text = msg.text
             tvTime.text = formatTime(msg.timestamp)
-            tvCheck.text = when (msg.messageStatus) {
-                "pending" -> "…"
-                "sent" -> "✓"
-                "read" -> "✓✓"
-                else -> "✓"
+            
+            val (resId, color) = when (msg.messageStatus) {
+                "sent" -> Pair(R.drawable.check_24, Color.parseColor("#b3b3b3"))
+                "received" -> Pair(R.drawable.checks_24, Color.parseColor("#b3b3b3"))
+                "read" -> Pair(R.drawable.checks_24, Color.parseColor("#29abe2"))
+                else -> Pair(R.drawable.check_24, Color.parseColor("#b3b3b3"))
             }
+            ivCheck.setImageResource(resId)
+            ivCheck.setColorFilter(color)
+
             tvMsg.post {
                 val bottomCase = tvMsg.lineCount >= 2
                 val cs = ConstraintSet()
@@ -124,27 +130,28 @@ class MessageAdapter(
 
                 if (!bottomCase) {
                     cs.clear(R.id.tvTimeMe, ConstraintSet.TOP)
-                    cs.clear(R.id.tvCheckMe, ConstraintSet.TOP)
+                    cs.clear(R.id.ivCheckMe, ConstraintSet.TOP)
 
                     cs.connect(R.id.tvTimeMe, ConstraintSet.BASELINE, R.id.tvMessageMe, ConstraintSet.BASELINE)
-                    cs.connect(R.id.tvCheckMe, ConstraintSet.BASELINE, R.id.tvMessageMe, ConstraintSet.BASELINE)
-
+                    
                     cs.connect(R.id.tvMessageMe, ConstraintSet.END, R.id.tvTimeMe, ConstraintSet.START, margin4dp)
-                    cs.connect(R.id.tvTimeMe, ConstraintSet.END, R.id.tvCheckMe, ConstraintSet.START, margin4dp)
-                    cs.connect(R.id.tvCheckMe, ConstraintSet.END, R.id.bubbleMe, ConstraintSet.END)
+                    cs.connect(R.id.tvTimeMe, ConstraintSet.END, R.id.ivCheckMe, ConstraintSet.START, margin4dp)
+                    cs.connect(R.id.ivCheckMe, ConstraintSet.END, R.id.bubbleMe, ConstraintSet.END)
+                    cs.connect(R.id.ivCheckMe, ConstraintSet.BOTTOM, R.id.bubbleMe, ConstraintSet.BOTTOM)
                 } else {
                     cs.clear(R.id.tvTimeMe, ConstraintSet.BASELINE)
-                    cs.clear(R.id.tvCheckMe, ConstraintSet.BASELINE)
+                    
                     // Remove any previous END-to-time constraint to avoid reserved space
                     cs.clear(R.id.tvMessageMe, ConstraintSet.END)
 
                     cs.connect(R.id.tvMessageMe, ConstraintSet.END, R.id.bubbleMe, ConstraintSet.END)
 
                     cs.connect(R.id.tvTimeMe, ConstraintSet.TOP, R.id.tvMessageMe, ConstraintSet.BOTTOM, margin4dp)
-                    cs.connect(R.id.tvTimeMe, ConstraintSet.END, R.id.tvCheckMe, ConstraintSet.START, margin4dp)
+                    cs.connect(R.id.tvTimeMe, ConstraintSet.END, R.id.ivCheckMe, ConstraintSet.START, margin4dp)
 
-                    cs.connect(R.id.tvCheckMe, ConstraintSet.TOP, R.id.tvMessageMe, ConstraintSet.BOTTOM, margin4dp)
-                    cs.connect(R.id.tvCheckMe, ConstraintSet.END, R.id.bubbleMe, ConstraintSet.END)
+                    cs.connect(R.id.ivCheckMe, ConstraintSet.TOP, R.id.tvMessageMe, ConstraintSet.BOTTOM, margin4dp)
+                    cs.connect(R.id.ivCheckMe, ConstraintSet.END, R.id.bubbleMe, ConstraintSet.END)
+                    cs.connect(R.id.ivCheckMe, ConstraintSet.BOTTOM, R.id.bubbleMe, ConstraintSet.BOTTOM)
                 }
 
                 cs.applyTo(bubble)

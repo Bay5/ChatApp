@@ -20,6 +20,10 @@ class ContactViewModel(
     private val _contactUsers = MutableLiveData<List<AppUser>>()
     val contactUsers: LiveData<List<AppUser>> = _contactUsers
 
+    // 🔹 Incoming requests
+    private val _incomingRequests = MutableLiveData<List<AppUser>>()
+    val incomingRequests: LiveData<List<AppUser>> = _incomingRequests
+
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
 
@@ -52,6 +56,48 @@ class ContactViewModel(
     fun reject(id: String) {
         repo.rejectContact(id) { ok, err ->
             if (!ok) _error.value = err
+        }
+    }
+
+    fun acceptRequestFrom(uid: String) {
+        _loading.value = true
+        repo.acceptContactRequest(uid) { ok, err ->
+            _loading.value = false
+            if (!ok) _error.value = err
+            else loadIncomingRequests() // refresh list
+        }
+    }
+
+    fun rejectRequestFrom(uid: String) {
+        _loading.value = true
+        repo.rejectContactRequest(uid) { ok, err ->
+            _loading.value = false
+            if (!ok) _error.value = err
+            else loadIncomingRequests() // refresh list
+        }
+    }
+
+    fun loadIncomingRequests() {
+        _loading.value = true
+        repo.getIncomingRequests { ids, err ->
+            if (err != null) {
+                _loading.value = false
+                _error.value = err
+                _incomingRequests.value = emptyList()
+                return@getIncomingRequests
+            }
+
+            if (ids.isEmpty()) {
+                _loading.value = false
+                _incomingRequests.value = emptyList()
+                return@getIncomingRequests
+            }
+
+            userRepo.getUsersByIds(ids) { users, err2 ->
+                _loading.value = false
+                if (err2 != null) _error.value = err2
+                _incomingRequests.value = users
+            }
         }
     }
 

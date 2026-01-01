@@ -46,20 +46,32 @@ object MessageNotificationManager {
                         .limit(5)
                         .get()
                         .addOnSuccessListener { msnap ->
+                            val batch = db.batch()
+                            var updates = 0
+
                             val lines = msnap.documents
                                 .mapNotNull { doc ->
                                     val txt = doc.getString("text")
                                     val from = doc.getString("fromUid")
                                     val status = doc.getString("messageStatus")
+                                    
+                                    if (from != uid && status == "sent") {
+                                        batch.update(doc.reference, "messageStatus", "received")
+                                        updates++
+                                    }
                                     Triple(txt, from, status)
                                 }
-                                .filter { (_, from, status) -> from != uid && status == "sent" }
+                                .filter { (_, from, status) -> from != uid && (status == "sent" || status == "received") }
                                 .map { (text, _, _) ->
                                     val clean = (text ?: "").trim()
                                     ellipsize(clean, 60)
                                 }
                                 .take(3)
                                 .reversed()
+
+                            if (updates > 0) {
+                                batch.commit()
+                            }
 
                             db.collection("users")
                                 .document(otherUid)

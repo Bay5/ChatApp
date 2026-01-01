@@ -102,7 +102,7 @@ class ChatRepository {
         val cid = chatId(currentUid, otherUid)
         val coll = db.collection("chats").document(cid).collection("messages")
         coll.whereEqualTo("toUid", currentUid)
-            .whereEqualTo("messageStatus", "sent")
+            .whereIn("messageStatus", listOf("sent", "received"))
             .get()
             .addOnSuccessListener { snap ->
                 if (snap.isEmpty) {

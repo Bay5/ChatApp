@@ -18,6 +18,8 @@
     <color name="text_hint">#B2BEC3</color>
 
     <!-- Legacy overrides or mappings to keep existing refs working if needed -->
-    <color name="purple_500">@color/primary</color> 
+    <color name="purple_500">@color/primary</color>
     <color name="white_grey">#DFE6E9</color>
+
+    <color name="error">#cc0000</color>
 </resources>

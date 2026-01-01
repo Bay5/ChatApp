@@ -18,6 +18,9 @@
             android:name=".view.SearchUserActivity"
             android:exported="false" />
         <activity
+            android:name=".view.RequestsActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustResize" />

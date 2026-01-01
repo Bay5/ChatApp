@@ -19,12 +19,15 @@ import com.bay.chatapp.view.adapter.UserAdapter
 import com.bay.chatapp.data.entity.AppUser
 import com.bay.chatapp.viewmodel.ContactViewModel
 import com.google.android.material.textfield.TextInputEditText
+import android.content.Intent
+import android.widget.ImageButton
 
 class ContactsFragment : Fragment() {
 
     private lateinit var etSearch: TextInputEditText
     private lateinit var rvContacts: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var btnRequests: ImageButton
 
     private lateinit var contactViewModel: ContactViewModel
     private lateinit var adapter: UserAdapter
@@ -50,6 +53,11 @@ class ContactsFragment : Fragment() {
         etSearch = view.findViewById(R.id.etSearchContacts)
         rvContacts = view.findViewById(R.id.rvContacts)
         progressBar = view.findViewById(R.id.progressContacts)
+        btnRequests = view.findViewById(R.id.btnRequests)
+
+        btnRequests.setOnClickListener {
+            startActivity(Intent(requireContext(), RequestsActivity::class.java))
+        }
 
         adapter = UserAdapter(emptyList()) { user ->
             showProfileOptions(user)
