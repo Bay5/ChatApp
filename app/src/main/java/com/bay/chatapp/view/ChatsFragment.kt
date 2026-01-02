@@ -73,6 +73,7 @@ class ChatsFragment : Fragment() {
         val intent = Intent(requireContext(), ChatActivity::class.java).apply {
             putExtra("otherUid", item.otherUid)
             putExtra("otherUsername", item.otherUsername)
+            putExtra("otherDisplayName", item.otherDisplayName)
             putExtra("otherPhotoUrl", item.otherPhotoUrl)
         }
         startActivity(intent)

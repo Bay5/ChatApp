@@ -48,6 +48,12 @@ class ChatViewModel(
             _sending.postValue(false)
             if (!ok) {
                 _error.postValue(err ?: "Failed to send")
+            } else {
+                // If success, restart listener if messages are empty 
+                // (This handles the case where listener failed due to missing chat doc)
+                if (_messages.value.isNullOrEmpty()) {
+                    startChat(targetUid)
+                }
             }
         }
     }

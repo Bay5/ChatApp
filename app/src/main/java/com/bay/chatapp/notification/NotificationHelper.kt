@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.bay.chatapp.R
 import com.bay.chatapp.view.ChatActivity
+import android.graphics.BitmapFactory
 
 object NotificationHelper {
     const val CHANNEL_ID = "messages"
@@ -43,14 +44,14 @@ object NotificationHelper {
     fun notifyMessages(
         context: Context,
         otherUid: String,
-        otherUsername: String,
+        otherDisplayName: String,
         otherPhotoUrl: String,
         lines: List<String>,
         notificationId: Int
     ) {
         val intent = Intent(context, ChatActivity::class.java)
             .putExtra("otherUid", otherUid)
-            .putExtra("otherUsername", otherUsername)
+            .putExtra("otherUsername", otherDisplayName)
             .putExtra("otherPhotoUrl", otherPhotoUrl)
         val pi = androidx.core.app.TaskStackBuilder.create(context)
             .addNextIntentWithParentStack(intent)
@@ -59,10 +60,11 @@ object NotificationHelper {
         val joined = lines.take(3).joinToString(separator = "\n") { it }
         val style = NotificationCompat.BigTextStyle().bigText(joined)
 
-        val title = if (otherUsername.isNotBlank()) "@$otherUsername" else "New messages"
+        val title = if (otherDisplayName.isNotBlank()) otherDisplayName else "New messages"
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.baseline_chat_24)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
             .setContentTitle(title)
             .setStyle(style)
             .setAutoCancel(true)
@@ -79,7 +81,8 @@ object NotificationHelper {
 
     fun buildServiceNotification(context: Context): android.app.Notification {
         val builder = NotificationCompat.Builder(context, SERVICE_CHANNEL_ID)
-            .setSmallIcon(R.drawable.baseline_chat_24)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
             .setContentTitle("Listening for messages")
             .setContentText("Deliveries and notifications are active")
             .setPriority(NotificationCompat.PRIORITY_MIN)

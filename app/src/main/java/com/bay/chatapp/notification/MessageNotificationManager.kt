@@ -77,14 +77,14 @@ object MessageNotificationManager {
                                 .document(otherUid)
                                 .get()
                                 .addOnSuccessListener { userDoc ->
-                                    val username = userDoc.getString("username") ?: ""
+                                    val displayName = userDoc.getString("displayName") ?: ""
                                     val photo = userDoc.getString("photoUrl") ?: ""
 
                                     val nid = cid.hashCode()
                                     NotificationHelper.notifyMessages(
                                         context = context,
                                         otherUid = otherUid,
-                                        otherUsername = username,
+                                        otherDisplayName = displayName,
                                         otherPhotoUrl = photo,
                                         lines = lines,
                                         notificationId = nid

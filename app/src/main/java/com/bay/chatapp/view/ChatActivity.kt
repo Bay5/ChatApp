@@ -37,6 +37,7 @@ class ChatActivity : AppCompatActivity() {
 
     private var otherUid: String = ""
     private var otherUsername: String = ""
+    private var otherDisplayName: String = ""
     private var otherPhotoUrl: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +108,10 @@ class ChatActivity : AppCompatActivity() {
 
         val tvTitle: TextView = custom.findViewById(R.id.tvTitle)
         val ivAvatar: ImageView = custom.findViewById(R.id.ivAvatar)
-        tvTitle.text = if (otherUsername.isNotBlank()) otherUsername else "Chat"
+        
+        val nameToShow = if (otherDisplayName.isNotBlank()) otherDisplayName else otherUsername
+        tvTitle.text = if (nameToShow.isNotBlank()) nameToShow else "Chat"
+        
         Glide.with(this)
             .load(otherPhotoUrl)
             .placeholder(R.mipmap.ic_launcher_round)
@@ -128,12 +132,15 @@ class ChatActivity : AppCompatActivity() {
         lm.stackFromEnd = true
         rvMessages.layoutManager = lm
         rvMessages.adapter = adapter
+        rvMessages.overScrollMode = View.OVER_SCROLL_NEVER
 
         viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
 
         viewModel.messages.observe(this) { msgs ->
             adapter.submitList(msgs)
-            rvMessages.scrollToPosition(msgs.size - 1)
+            if (msgs.isNotEmpty()) {
+                (rvMessages.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(msgs.size - 1, 0)
+            }
             viewModel.markAllRead()
         }
 

@@ -39,6 +39,22 @@ class SettingsFragment : Fragment() {
         val btnSaveProfile = view.findViewById<Button>(R.id.btnSaveProfile)
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
         val ivAvatar = view.findViewById<ShapeableImageView>(R.id.ivAvatar)
+        val switchDarkMode = view.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchDarkMode)
+
+        // Initialize Switch state
+        val sharedPrefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val isDarkMode = sharedPrefs.getBoolean("dark_mode", false)
+        switchDarkMode.isChecked = isDarkMode
+
+        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            sharedPrefs.edit().putBoolean("dark_mode", isChecked).apply()
+            val mode = if (isChecked) {
+                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+            }
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
+        }
 
         val auth = FirebaseAuth.getInstance()
         val db = FirebaseFirestore.getInstance()

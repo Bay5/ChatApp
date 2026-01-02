@@ -62,6 +62,7 @@
             android:textSize="12sp"
             android:paddingHorizontal="12dp"
             android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/primary"
             style="@style/Widget.Material3.Button.TonalButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

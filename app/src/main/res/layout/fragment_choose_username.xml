@@ -9,7 +9,7 @@
         android:id="@+id/tvChooseUsernameTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a username"
+        android:text="Choose display name and username"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"

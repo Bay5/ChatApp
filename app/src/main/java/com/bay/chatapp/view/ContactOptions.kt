@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.fragment.app.DialogFragment
 import androidx.core.graphics.drawable.toDrawable
 
-class ProfileOptionsBottomSheet : DialogFragment() {
+class ContactOptions : DialogFragment() {
 
     companion object {
         private const val ARG_UID = "arg_uid"
@@ -26,8 +26,8 @@ class ProfileOptionsBottomSheet : DialogFragment() {
         private const val ARG_DISPLAY = "arg_display"
         private const val ARG_PHOTO = "arg_photo"
 
-        fun newInstance(user: AppUser): ProfileOptionsBottomSheet {
-            val f = ProfileOptionsBottomSheet()
+        fun newInstance(user: AppUser): ContactOptions {
+            val f = ContactOptions()
             val b = Bundle()
             b.putString(ARG_UID, user.uid)
             b.putString(ARG_USERNAME, user.username)
@@ -86,6 +86,7 @@ class ProfileOptionsBottomSheet : DialogFragment() {
             val intent = Intent(requireContext(), ChatActivity::class.java).apply {
                 putExtra("otherUid", uid)
                 putExtra("otherUsername", username)
+                putExtra("otherDisplayName", displayName)
                 putExtra("otherPhotoUrl", photoUrl)
             }
             startActivity(intent)

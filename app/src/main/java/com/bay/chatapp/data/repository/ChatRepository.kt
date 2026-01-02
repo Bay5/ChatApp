@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import com.google.firebase.firestore.SetOptions
 
 class ChatRepository {
 
@@ -65,7 +66,7 @@ class ChatRepository {
         )
 
         db.runBatch { batch ->
-            batch.set(chatRef, chatMeta)
+            batch.set(chatRef, chatMeta, SetOptions.merge())
             batch.set(msgRef, msg)
         }.addOnSuccessListener {
             repoScope.launch {

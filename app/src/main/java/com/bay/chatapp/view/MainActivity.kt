@@ -19,11 +19,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPrefs = getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val isDarkMode = sharedPrefs.getBoolean("dark_mode", false)
+        val mode = if (isDarkMode) androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES else androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         NotificationHelper.createChannel(this)
-        MessageNotificationManager.start(this)
+        // Start background service instead of direct manager call
+        val intent = android.content.Intent(this, com.bay.chatapp.service.MessageService::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
 
         val root = findViewById<android.view.View>(R.id.viewPagerMain)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->

@@ -58,7 +58,7 @@ class UserAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_user_row, parent, false)
+            .inflate(R.layout.item_contact, parent, false)
         return UserViewHolder(v)
     }
 

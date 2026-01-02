@@ -44,8 +44,7 @@ class ChooseUsernameFragment : Fragment() {
                 Toast.makeText(requireContext(), "Display Name required", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            authViewModel.setUsername(username)
-            authViewModel.setDisplayName(displayName)
+            authViewModel.completeProfile(username, displayName)
         }
         return view
     }

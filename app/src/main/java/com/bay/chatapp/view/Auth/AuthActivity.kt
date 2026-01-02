@@ -33,6 +33,11 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isDarkMode = sharedPrefs.getBoolean("dark_mode", false)
+        val mode = if (isDarkMode) androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES else androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_auth)
@@ -44,11 +49,11 @@ class AuthActivity : AppCompatActivity() {
             insets
         }
 
-        tvTitle = findViewById(R.id.tvTitle)
         viewPager = findViewById(R.id.viewPager)
         tabLayout = findViewById(R.id.tabLayout)
         progressBar = findViewById(R.id.progressAuth)
         usernameContainer = findViewById(R.id.usernameContainer)
+        tvTitle = findViewById(R.id.tvTitle)
 
         val adapter = AuthPagerAdapter(this)
         viewPager.adapter = adapter

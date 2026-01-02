@@ -25,7 +25,7 @@ class RequestAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_request_row, parent, false)
+            .inflate(R.layout.item_request, parent, false)
         return ViewHolder(view)
     }
 

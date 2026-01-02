@@ -70,4 +70,20 @@ class AuthViewModel(
             _authState.value = if (ok) AuthState.Success else AuthState.Error(error)
         }
     }
+    
+    fun completeProfile(username: String, displayName: String) {
+        _authState.value = AuthState.Loading
+        // First set username (as it has unique check), then display name
+        repository.setUsernameForUser(username) { ok, error ->
+            if (!ok) {
+                _authState.value = AuthState.Error(error)
+                return@setUsernameForUser
+            }
+            
+            // If username success, set display name
+            repository.setDisplayNameForUser(displayName) { okDisplay, errorDisplay ->
+                 _authState.value = if (okDisplay) AuthState.Success else AuthState.Error(errorDisplay)
+            }
+        }
+    }
 }

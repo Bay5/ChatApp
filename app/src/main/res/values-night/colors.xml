@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="primary_dark_mode">#7C73FF</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B0B0B0</color>
+    <color name="text_or_sign_in">#FFFFFF</color>
+    <color name="icon_back_arrow">#FFFFFF</color>
+    
+    <!-- Dark Mode Specifics -->
+    <color name="surface_card">#2C2C2C</color>
+    <color name="surface_variant">#333333</color>
+    <color name="text_primary">#ECECEC</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="text_hint">#808080</color>
+    <color name="background_light">#2C2C2C</color> <!-- Reusing for input background -->
+</resources>

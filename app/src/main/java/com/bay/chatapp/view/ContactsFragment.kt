@@ -103,8 +103,13 @@ class ContactsFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        contactViewModel.loadContactUsers()
+    }
+
     private fun showProfileOptions(user: AppUser) {
-        val sheet = ProfileOptionsBottomSheet.newInstance(user)
+        val sheet = ContactOptions.newInstance(user)
         sheet.show(childFragmentManager, "profile_options")
     }
 
